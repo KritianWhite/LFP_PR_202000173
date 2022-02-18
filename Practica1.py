@@ -1,7 +1,8 @@
-from audioop import add
-from sqlite3.dbapi2 import _AggregateProtocol
 from tkinter import *
 from tkinter import filedialog
+from turtle import color
+from matplotlib import axis
+import matplotlib.pyplot as at
 import re
 
 from numpy import char 
@@ -26,8 +27,8 @@ def Cargar_Data():
     global fileData
     fileData = open(filedialog.askopenfilename(filetypes=( ('Data files','.data'),("All files","*.*") )), "r")
     fileData = fileData.read()
-    cargaData = fileData.lower()
-    return cargaData
+    #cargaData = fileData.lower()
+    #return cargaData
 
     #fileData = limpiarUTF8(fileData.lower())
     #fileData = fileData.close()
@@ -45,62 +46,51 @@ def Cargar_Instrucciones():
     global fileInstrucciones
     fileInstrucciones = open(filedialog.askopenfilename(filetypes=( ('IPRO LFP Format files','.lfp'),("All files","*.*") )), "r")
     fileInstrucciones = fileInstrucciones.read()
-    cargaInstrucciones = fileData.lower()
-    return cargaInstrucciones
+    #cargaInstrucciones = fileData.lower()
+    #return cargaInstrucciones
     
     #fileInstrucciones = limpiarUTF8(fileInstrucciones.lower()) #Esto indica que se eliminan caracteres UTF8 y coniverte todo el texto en minusulas
     #fileInstrucciones.close()
-    #print(fileInstrucciones)
-    print("Se guardo el archivo de instrucciones éxitosamente.\n")
+    print(fileInstrucciones)
+    #print("Se guardo el archivo de instrucciones éxitosamente.\n")
 
-## El utf lo veo inecesario realmente por el momento
-def limpiarUTF8(x):
-    text = ""
-    add = False
+def Analizar():
 
-    for symbol in X:
-        if symbol != '\"':
-            if(symbol != " " and symbol != "\t" and symbol != "\n") or add1:
-                texto += symbol
-        elif not add1:
-            text += symbol
-            add1 = False
-        else:
-            text =+ symbol
-            add1 = False
-    return text
-
-
-def Analizar(x):
-
-    ########## Leendo archivo .data ############
+    ########## LEENDO ARCHIVO .data ###########
     
+
     # Para el mes
     dataMes = False
-    Mes = ""
+    #Mes = ""
     # Para el año
     dataAnio = False
-    Anio = ""
+    #Anio = ""
     # Para productos
     dataProducto = True
+    global nombreProducto
+    nombreProducto = []
     arrayProducto = []
+    global Precio_Producto
+    Precio_Producto = []
     precioProducto = False
+    global Cantidad_Producto
+    Cantidad_Producto = []
     cantidadProducto = False
 
     Contador = 0
     auxiliar = ""
 
-    for i in x:
+    for i in fileData:
         if dataMes == False:
             if i != ":":
-                auxiliar=+ i
+                auxiliar += i
             else:
                 dataMes = auxiliar
                 dataMes = True
                 auxiliar = ""
         elif dataAnio == False:
             if i != "=":
-                auxiliar=+ i
+                auxiliar += i
             else:
                 dataAnio = auxiliar
                 dataAnio = True
@@ -109,15 +99,86 @@ def Analizar(x):
             dataProducto = True
         elif i == ")":
             print("veremos que pasa")
-        elif (dataMes and dataAnio and dataProducto) == True:
+        elif i == "\n":
+            pass
+        elif i == "\t":
+            pass
+
+        elif dataMes == True and dataAnio == True and dataProducto == True:
+            #print("holas")
             if i == "[":
                 precioProducto = True
             elif i == "]":
                 cantidadProducto = True
-            
+            elif i =='\"' or i == '\'':
+                Contador += 1
+            elif i ==";" and precioProducto == True and cantidadProducto == True and Contador == 2:
+                listaData = auxiliar.split(",")
 
-    
-    #print("insertar procedimineot aqui")
+                listaData[1] = float(listaData[1])
+                listaData[2] = int(listaData[2])
+                arrayProducto.append(listaData)
+                precioProducto = False
+                cantidadProducto = False
+                Contador = 0
+                auxiliar = ""
+            else:
+                auxiliar += i
+    #print(listaData)
+    global x 
+    for x in arrayProducto:
+        str(nombreProducto.append(x[0]))
+        Precio_Producto.append(x[1])
+        Cantidad_Producto.append(x[2])
+    #print(arrayProducto)#Impresion del array productos
+
+    ################# LEENDO ARCHIVO .data ###################
+
+    # Para el nombre
+    global nombre 
+    nombre = "Grafica"
+    # Para la gráfica
+    global grafica
+    grafica = ""
+    # Para el Titulo
+    global Titulo
+    Titulo = "Titulo Grafica"
+    # Para el Titulo en X
+    global TituloX
+    TituloX = "ejex"
+    # Para el Titulo en Y
+    global TituloY
+    TituloY = "ejey"
+
+
+def graficaBarras():
+
+    #at.rcdefaults()
+    #figB, aXB = at.subplots()
+    # Grafica Barras
+    #ejexB = ['hola','jaja','gato','perro']
+    #ejexB = [] = nombreProducto.append(x[0])
+    #ejeyB = [1,2,3,4]
+    #ejeyB = [] = Cantidad_Producto.append(x[2])
+    #aXB.bar(ejexB, ejeyB)
+    # Titulos de los ejes
+    #aXB.set_xlabel(TituloX)
+    #aXB.set_ylabel(TituloY)
+    # Aspecto de la gráfica
+    #aXB.grid(axis='y', color = 'lightblue', linestyle = 'dashed')
+    #aXB.set_title(Titulo)
+    # Mostrar gráfica
+    #figB.savefig('./graficaBarras.png')
+   
+    print("Barras")
+
+def graficaLineas():
+    print("Lineas")    
+
+def graficaCircular():
+    print("Circular")
+
+
 
 def Reportes():
     print("insertar procedimineot aqui")
@@ -135,7 +196,10 @@ if opcion == 2:
 if opcion == 3:
     Analizar()
 if opcion == 4:
-    Reportes()
+    graficaBarras()
+    #Reportes()
+    Menu()
+
 if opcion == 5:
     Salir()
 if opcion <= 0 or opcion >=6:
@@ -143,4 +207,3 @@ if opcion <= 0 or opcion >=6:
     Menu()
 else:
     print(" ")
-print("holamuneod")
