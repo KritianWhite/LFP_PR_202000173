@@ -1,7 +1,5 @@
 from tkinter import *
 from tkinter import filedialog
-from turtle import color
-from matplotlib import axis
 import matplotlib.pyplot as at
 import re
 
@@ -27,13 +25,13 @@ def Cargar_Data():
     global fileData
     fileData = open(filedialog.askopenfilename(filetypes=( ('Data files','.data'),("All files","*.*") )), "r")
     fileData = fileData.read()
-    #cargaData = fileData.lower()
+    fileData = fileData.lower()
     #return cargaData
 
     #fileData = limpiarUTF8(fileData.lower())
     #fileData = fileData.close()
-    #print(fileData)
-    print("Se guardo el archivo de datos éxitosamente.\n")
+    print(fileData)
+    #print("Se guardo el archivo de datos éxitosamente.\n")
     
 # Lista del archivo .data
 
@@ -46,7 +44,7 @@ def Cargar_Instrucciones():
     global fileInstrucciones
     fileInstrucciones = open(filedialog.askopenfilename(filetypes=( ('IPRO LFP Format files','.lfp'),("All files","*.*") )), "r")
     fileInstrucciones = fileInstrucciones.read()
-    #cargaInstrucciones = fileData.lower()
+    #fileInstrucciones = fileData.lower()
     #return cargaInstrucciones
     
     #fileInstrucciones = limpiarUTF8(fileInstrucciones.lower()) #Esto indica que se eliminan caracteres UTF8 y coniverte todo el texto en minusulas
@@ -55,10 +53,8 @@ def Cargar_Instrucciones():
     #print("Se guardo el archivo de instrucciones éxitosamente.\n")
 
 def Analizar():
-
-    ########## LEENDO ARCHIVO .data ###########
     
-
+    #-------------------------LEER ARCHIVO .data------------------------
     # Para el mes
     dataMes = False
     #Mes = ""
@@ -132,24 +128,50 @@ def Analizar():
         Cantidad_Producto.append(x[2])
     #print(arrayProducto)#Impresion del array productos
 
-    ################# LEENDO ARCHIVO .data ###################
+    #-----------------LEER ARCHIVO .lfp-------------------
 
-    # Para el nombre
-    global nombre 
-    nombre = "Grafica"
-    # Para la gráfica
-    global grafica
-    grafica = ""
-    # Para el Titulo
-    global Titulo
-    Titulo = "Titulo Grafica"
-    # Para el Titulo en X
-    global TituloX
-    TituloX = "ejex"
-    # Para el Titulo en Y
-    global TituloY
-    TituloY = "ejey"
+    
 
+
+def analizarInstrucciones():
+    dataInstrucciones = False
+    arrayInstrucciones = []
+    Bloque1 = False
+    Bloque2 = False
+    contadorI = 0
+    auxiliarI = ""
+
+    for c in fileInstrucciones:
+       if dataInstrucciones == False:
+            if c == "<¿":
+                auxiliarI += 1
+            else: 
+                dataInstrucciones = auxiliarI
+                dataInstrucciones = True
+                auxiliarI = ""
+            if c == "?>":
+                print("veremos que pasa instrucciones")
+                #dataInstrucciones = True
+                if c == '"':
+                    auxiliarI += c
+                else:
+                    dataInstrucciones = auxiliarI
+                    dataInstrucciones = True
+                    auxiliarI = ""
+                
+            elif c == "," and dataInstrucciones == True:
+                listaInstrucciones = auxiliarI.split(",")
+                listaInstrucciones[0] = listaInstrucciones[0]
+                #arrayInstruciones.append(listaInstrucciones)
+                dataInstrucciones = False
+                contadorI = 0
+                auxiliarI = ""
+            else:
+                auxiliarI += 1
+    print(listaInstrucciones)
+    #for m in arrayInstrucciones:
+    #    str(dataInstrucciones.append(x[0]))
+    #print(arrayInstrucciones)
 
 def graficaBarras():
 
@@ -194,7 +216,7 @@ if opcion == 2:
     Cargar_Instrucciones()
     Menu()
 if opcion == 3:
-    Analizar()
+    analizarInstrucciones()
 if opcion == 4:
     graficaBarras()
     #Reportes()
