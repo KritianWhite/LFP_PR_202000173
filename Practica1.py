@@ -225,6 +225,17 @@ def graficaCircular(ejexB, ejeyB):
 
 
 def Reportes():
+    
+    f = open('holamundo.html','w')
+
+    mensaje = """
+    
+    
+
+    """
+
+    f.write(mensaje)
+    f.close()
     print("insertar procedimineot aqui")
 
 
